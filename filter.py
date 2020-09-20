@@ -15,12 +15,10 @@ def pick_color(event,x,y,flags,param):
         print(pixel, lower, upper)
 
         image_mask0 = cv2.inRange(image_hsv,lower,upper)
-        kernel = np.ones((5, 5), np.float32) / 25
-        image_mask = cv2.filter2D(image_mask0, -1, kernel)
-        res = cv2.bitwise_and(image_src, image_src, mask=image_mask)
+
+        res = cv2.bitwise_and(image_src, image_src, mask=image_mask0)
 
 
-        cv2.imshow("image filter Averaging", image_mask)
         cv2.imshow("mask",image_mask0)
         cv2.imshow("image filtered", res)
 
@@ -29,7 +27,7 @@ def main():
     import sys
     global image_hsv, pixel, image_src # so we can use it in mouse callback
 
-    image_src = cv2.imread("Green_light_3.jpg")  # pick.py my.png
+    image_src = cv2.imread("left_turn_1.jpg")  # pick.py my.png
     if image_src is None:
         print ("the image read is None............")
         return
@@ -41,8 +39,12 @@ def main():
 
     # now click into the hsv img , and look at values:
     #sub = cv2.cvtColor(image_src,cv2.COLOR_BGR2RGB)
+    kernel = np.ones((5, 5), np.float32) / 25
+
     bilateral = cv2.bilateralFilter(image_src, 15, 75, 75)
     image_hsv = cv2.cvtColor(bilateral,cv2.COLOR_BGR2HSV)
+    #image_hsv = cv2.morphologyEx(image_hsv0, cv2.MORPH_CLOSE, kernel)
+    #image_hsv = cv2.erode(image_hsv0, kernel, iterations=1)
     cv2.imshow("hsv",image_hsv)
     cv2.imshow("image filter BILATERAL", bilateral)
 
