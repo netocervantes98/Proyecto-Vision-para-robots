@@ -3,8 +3,9 @@
 # Prof. Gabriel González Sahagún
 
 # A01196642 Ernesto Cervantes Juárez
-# A01196642 Ernesto Cervantes Juárez
-# A01196642 Ernesto Cervantes Juárez
+# A00820188 Eduardo Angulo Martínez
+# A00821541 Miguel Morales de la Vega
+# A00820662 Sergio Canto Arizpe
 # A01196642 Ernesto Cervantes Juárez
 
 import numpy as np
