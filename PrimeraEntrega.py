@@ -11,6 +11,7 @@
 from copy import copy
 import numpy as np
 import cv2 as cv
+import sys
 
 # Variables globales
 img_path = 'gundam.jpg'
@@ -21,7 +22,6 @@ color_azul = (255, 0, 0)
 color_verde = (0, 255, 0)
 color_rojo = (0, 0, 255)
 color_click = (0, 0, 0)
-
 
 # Tamaño de grafica
 n = 540
@@ -39,23 +39,41 @@ clean_blue = 0
 clean_red = 0
 clean_green = 0
 
+image_hsv = None   # global ;(
+image_src = None
+pixel = (20, 60, 80)  # some stupid default
+
 
 def click(event, x, y, flags, param):
+    global coords
     if event == cv.EVENT_LBUTTONDOWN:
         coords.append((x, y))
         if len(coords) == 2:
             submatrix = img[coords[0][0]: coords[1]
                             [0], coords[0][1]: coords[1][1]]
-            print("min:", np.amin(submatrix))
-            print("max:", np.amax(submatrix))
-            print("median:", '{:.3f}'.format(np.median(submatrix)))
-            print("average:", '{:.3f}'.format(np.average(submatrix)))
-            print("std dev:", '{:.3f}'.format(np.std(submatrix)))
+
+            minn = np.amin(submatrix)
+            maxx = np.amax(submatrix)
+            median = np.median(submatrix)
+            average = np.average(submatrix)
+            std = np.std(submatrix)
+
+            print("mínimo: ", minn)
+            print("máximo: ", maxx)
+            print("mediana: ", '{:.3f}'.format(median))
+            print("promedio: ", '{:.3f}'.format(average))
+            print("desviación estandar: ", '{:.3f}'.format(std))
             cv.destroyAllWindows()
+            f = open("stats.txt", "w" if flag else "a")
+            f.write(f'{coords[0][0]} {coords[1][0]} {coords[0][1]} {coords[1][1]} {minn} {maxx} {median} {average} {std}\n')
+            f.close()
+            coords = []
 
 
 def stats():
-    # Punto 6
+    global flag, img
+    print("\nESTADÍSTICAS\nSeleecione área (dos puntos)")
+    flag = int(input("¿Quiere sobreescribir? 1 sí | 0 no: "))
     img = cv.imread('gundam.jpg')
     img2 = cv.resize(img, (540, 540))
     img = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
@@ -66,8 +84,12 @@ def stats():
 
 
 def binarizar():
-    # Punto 7
-    _, binimg = cv.threshold(img, 127, 255, cv.THRESH_BINARY)
+    print("\nBINARIZACIÓN")
+    img = cv.imread('gundam.jpg')
+    img2 = cv.resize(img, (540, 540))
+    img = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
+    info = int(input("Digite valor de umbral (0 - 255): "))
+    _, binimg = cv.threshold(img, info, 255, cv.THRESH_BINARY)
     cv.imshow('binarizada', binimg)
     cv.waitKey(0)
     cv.destroyAllWindows()
@@ -157,6 +179,7 @@ def createImage(name, color_, arr):
 
 
 def histograma():
+    print("\nHISTOGRAMA")
     # Leer imagen y cambiar tamaño.
     global blue_image, green_image, red_image, color_blue_frequency, color_red_frequency, color_green_frequency, img
     img = cv.imread(img_path)
@@ -181,15 +204,10 @@ def histograma():
     cv.destroyAllWindows()
 
 
-image_hsv = None   # global ;(
-image_src = None
-pixel = (20, 60, 80)  # some stupid default
-
 # mouse callback function
-
-
 def pick_color(event, x, y, flags, param):
     if event == cv.EVENT_LBUTTONDOWN:
+        print("f")
         pixel = image_hsv[y, x]
         # you might want to adjust the ranges(+-10, etc):
         upper = np.array([pixel[0] + 10, pixel[1] + 10, pixel[2] + 40])
@@ -205,7 +223,7 @@ def pick_color(event, x, y, flags, param):
 
 
 def filtro():
-    import sys
+    print("\nFILTRO")
     global image_hsv, pixel, image_src  # so we can use it in mouse callback
 
     image_src = cv.imread("men.jpg")  # pick.py my.png
@@ -231,19 +249,18 @@ def filtro():
 
     cv.waitKey(0)
     cv.destroyAllWindows()
-    cv.destroyAllWindows()
 
 
 def menu():
     info = 1
     while info:
-        print("Seleccione: ")
+        print("\nMENU")
+        print("0 - Salir ")
         print("1 - Histograma ")
         print("2 - Filtro ")
-        print("3 - Estadisticas ")
+        print("3 - Estadísticas ")
         print("4 - Binarizar ")
-        print("0 - Salir ")
-        info = int(input())
+        info = int(input("Seleccione: "))
 
         if info == 1:
             histograma()
@@ -253,8 +270,6 @@ def menu():
             stats()
         elif info == 4:
             binarizar()
-        print(info)
-
 
 
 if __name__ == '__main__':
