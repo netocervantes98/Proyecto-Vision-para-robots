@@ -49,25 +49,61 @@ def click(event, x, y, flags, param):
     if event == cv.EVENT_LBUTTONDOWN:
         coords.append((x, y))
         if len(coords) == 2:
-            submatrix = img[coords[0][0]: coords[1]
-                            [0], coords[0][1]: coords[1][1]]
+            if coords[0][0] > coords[1][0]:
+                temp = coords[0]
+                coords[0] = coords[1]
+                coords[1] = temp
 
+
+            f = open("stats.txt", "w" if flag else "a")
+            print("\nCanal H")
+            submatrix = img[coords[0][0]: coords[1]
+                            [0], coords[0][1]: coords[1][1],0]
             minn = np.amin(submatrix)
             maxx = np.amax(submatrix)
             median = np.median(submatrix)
             average = np.average(submatrix)
             std = np.std(submatrix)
-
             print("mínimo: ", minn)
             print("máximo: ", maxx)
             print("mediana: ", '{:.3f}'.format(median))
             print("promedio: ", '{:.3f}'.format(average))
             print("desviación estandar: ", '{:.3f}'.format(std))
-            cv.destroyAllWindows()
-            f = open("stats.txt", "w" if flag else "a")
-            f.write(f'{coords[0][0]} {coords[1][0]} {coords[0][1]} {coords[1][1]} {minn} {maxx} {median} {average} {std}\n')
+            f.write(f'H {coords[0][0]} {coords[1][0]} {coords[0][1]} {coords[1][1]} {minn} {maxx} {median} {average} {std}\n')
+
+            print("\nCanal S")
+            submatrix = img[coords[0][0]: coords[1]
+                            [0], coords[0][1]: coords[1][1],1]
+            minn = np.amin(submatrix)
+            maxx = np.amax(submatrix)
+            median = np.median(submatrix)
+            average = np.average(submatrix)
+            std = np.std(submatrix)
+            print("mínimo: ", minn)
+            print("máximo: ", maxx)
+            print("mediana: ", '{:.3f}'.format(median))
+            print("promedio: ", '{:.3f}'.format(average))
+            print("desviación estandar: ", '{:.3f}'.format(std))
+            f.write(f'S {coords[0][0]} {coords[1][0]} {coords[0][1]} {coords[1][1]} {minn} {maxx} {median} {average} {std}\n')
+            
+            print("\nCanal V")
+            submatrix = img[coords[0][0]: coords[1]
+                            [0], coords[0][1]: coords[1][1],2]
+            minn = np.amin(submatrix)
+            maxx = np.amax(submatrix)
+            median = np.median(submatrix)
+            average = np.average(submatrix)
+            std = np.std(submatrix)
+            print("mínimo: ", minn)
+            print("máximo: ", maxx)
+            print("mediana: ", '{:.3f}'.format(median))
+            print("promedio: ", '{:.3f}'.format(average))
+            print("desviación estandar: ", '{:.3f}'.format(std))
+            f.write(f'V {coords[0][0]} {coords[1][0]} {coords[0][1]} {coords[1][1]} {minn} {maxx} {median} {average} {std}\n')
+            
             f.close()
             coords = []
+            cv.destroyAllWindows()
 
 
 def stats():
@@ -75,8 +111,7 @@ def stats():
     print("\nESTADÍSTICAS\nSeleecione área (dos puntos)")
     flag = int(input("¿Quiere sobreescribir? 1 sí | 0 no: "))
     img = cv.imread('gundam.jpg')
-    img2 = cv.resize(img, (540, 540))
-    img = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
+    img = cv.resize(img, (540, 540))
     cv.imshow('original', img)
     cv.setMouseCallback('original', click)
     cv.waitKey(0)
